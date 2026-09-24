@@ -1,0 +1,382 @@
+/*
+ * Sponsor tiers.
+ *
+ * Same design as the hand-written version that was on page 4403, rewritten
+ * mobile first. The original used max-width queries to shrink a desktop grid
+ * down; this starts at one column and adds columns as the screen allows, which
+ * is the right way round for a site that is roughly three-quarters mobile in
+ * season.
+ *
+ * Colours are hard-coded rather than read from theme.json on purpose: this
+ * plugin has to keep working if the theme is ever swapped, which is the whole
+ * reason sponsors live in a plugin.
+ */
+
+.wsr-sponsors {
+	--wsr-ink: #1b2733;
+	--wsr-muted: #5d6b7a;
+	--wsr-line: #e3e8ee;
+	--wsr-card: #fff;
+	max-width: 1140px;
+	margin: 0 auto;
+	padding: 8px 0 24px;
+	color: var(--wsr-ink);
+	font-family: inherit;
+}
+
+.wsr-sponsors * {
+	box-sizing: border-box;
+}
+
+.wsr-tier {
+	margin-bottom: 48px;
+}
+
+.wsr-tier-head {
+	position: relative;
+	margin-bottom: 24px;
+	padding-bottom: 12px;
+	border-bottom: 2px solid var(--wsr-line);
+}
+
+.wsr-tier-head::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: -2px;
+	width: 78px;
+	height: 2px;
+	background: var(--wsr-accent);
+}
+
+.wsr-tier-head h3 {
+	margin: 0;
+	font-size: 19px;
+	font-weight: 800;
+	letter-spacing: 1.1px;
+	text-transform: uppercase;
+	color: var(--wsr-accent);
+}
+
+.wsr-tier-head p {
+	margin: 5px 0 0;
+	font-size: 14.5px;
+	color: var(--wsr-muted);
+}
+
+/* One column by default. Columns are added at wider viewports, never removed. */
+.wsr-grid {
+	display: grid;
+	gap: 20px;
+	grid-template-columns: 1fr;
+}
+
+.wsr-card {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	/* 44px minimum tap target, with room to spare. */
+	min-height: 88px;
+	padding: 24px 20px 20px;
+	background: var(--wsr-card);
+	border: 1px solid var(--wsr-line);
+	border-radius: 6px;
+	text-align: center;
+	text-decoration: none;
+	color: inherit;
+	transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+/* Hover is decoration only. Nothing here depends on it. */
+a.wsr-card:hover,
+a.wsr-card:focus {
+	transform: translateY(-3px);
+	box-shadow: 0 10px 24px rgba(27, 39, 51, 0.13);
+	border-color: var(--wsr-accent);
+	text-decoration: none;
+}
+
+a.wsr-card:focus-visible {
+	outline: 3px solid var(--wsr-accent);
+	outline-offset: 3px;
+}
+
+.wsr-logo {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	margin-bottom: 16px;
+}
+
+.wsr-logo img {
+	max-width: 100%;
+	height: auto;
+	object-fit: contain;
+}
+
+.wsr-nologo {
+	font-size: 13px;
+	font-style: italic;
+	color: var(--wsr-muted);
+}
+
+.wsr-name {
+	margin: 0 0 4px;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.3;
+}
+
+.wsr-meta {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--wsr-muted);
+	word-break: break-word;
+}
+
+.wsr-open {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 30px 22px;
+	border: 2px dashed var(--wsr-line);
+	border-radius: 6px;
+	text-align: center;
+}
+
+.wsr-open p {
+	margin: 0;
+	font-size: 15.5px;
+	font-weight: 700;
+	color: var(--wsr-ink);
+}
+
+@media (min-width: 480px) {
+	.wsr-grid--community-partners {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 700px) {
+	.wsr-tier-head h3 {
+		font-size: 21px;
+	}
+
+	.wsr-grid--club-partners {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.wsr-grid--program-partners {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	.wsr-grid--community-partners {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+@media (min-width: 960px) {
+	.wsr-grid--program-partners {
+		grid-template-columns: repeat(3, 1fr);
+	}
+
+	.wsr-grid--community-partners {
+		grid-template-columns: repeat(4, 1fr);
+	}
+
+	.wsr-grid--community-partners .wsr-name {
+		font-size: 14.5px;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wsr-card {
+		transition: none;
+	}
+
+	a.wsr-card:hover,
+	a.wsr-card:focus {
+		transform: none;
+	}
+}
+
+/*
+ * The flat strip, for the front page.
+ *
+ * One row that rotates, at every width, in CSS. The first version scroll-snapped
+ * on a narrow screen and wrapped to a centred row above 860px. That wrap is what
+ * rendered eleven logos as six above five, which reads as a rendering fault
+ * rather than as a design, and the sponsor list only grows.
+ *
+ * Still no carousel script. The track holds the card set twice and slides to
+ * exactly -50%, which puts the second copy where the first began, so the loop
+ * has no seam and no JavaScript decides when to jump.
+ *
+ * Each run carries its own trailing gap as padding rather than the track using
+ * a gap of its own. With a track gap the two halves plus one gap are not twice
+ * a half, so -50% lands mid-gap and the loop visibly stutters once per cycle.
+ *
+ * The accent is set here because the strip has no tier wrapper to inherit one
+ * from, and the hover border would otherwise have no colour at all.
+ */
+
+.wsr-sponsors--strip {
+	--wsr-accent: #1d3a63;
+	--wsr-strip-gap: 16px;
+	--wsr-strip-seconds: 40s;
+	padding-bottom: 8px;
+}
+
+.wsr-strip {
+	/* Full-bleed edges on a phone, so a card is not clipped mid-rotation. */
+	margin: 0 -16px;
+	padding: 4px 0 16px;
+	overflow: hidden;
+}
+
+.wsr-strip-track {
+	display: flex;
+	width: max-content;
+	animation: wsr-strip-scroll var(--wsr-strip-seconds) linear infinite;
+}
+
+/*
+ * Pause on hover and on keyboard focus.
+ *
+ * A moving target is harder to click, and without the focus rule a keyboard
+ * user tabbing into the strip watches the link they are on slide off the edge.
+ */
+.wsr-strip:hover .wsr-strip-track,
+.wsr-strip:focus-within .wsr-strip-track {
+	animation-play-state: paused;
+}
+
+.wsr-strip-run {
+	display: flex;
+	gap: var(--wsr-strip-gap);
+	/* The trailing gap belongs to the run, not the track. See above. */
+	padding-right: var(--wsr-strip-gap);
+}
+
+/*
+ * Too few logos to rotate.
+ *
+ * The track holds the cards twice and slides to -50%, which needs enough cards
+ * to cover the viewport twice over. With three or fewer the row runs out and
+ * the wrap shows blank space and a visible jump. A static centred row is the
+ * honest rendering, and the renderer emits one run rather than two.
+ */
+.wsr-sponsors--static .wsr-strip-run {
+	justify-content: center;
+	flex-wrap: wrap;
+	row-gap: var(--wsr-strip-gap);
+	padding-right: 0;
+}
+
+@keyframes wsr-strip-scroll {
+	from {
+		transform: translateX(0);
+	}
+
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+.wsr-strip .wsr-card {
+	flex: 0 0 auto;
+	width: 168px;
+	padding: 18px 14px 14px;
+}
+
+/*
+ * No hover lift inside the strip.
+ *
+ * The row has to clip horizontally to hide the cards waiting off the edge, and
+ * CSS will not give one axis a clip and the other room, so overflow:hidden cuts
+ * the lifted card and its shadow off at the top and bottom. Pausing is the
+ * feedback a rotating strip needs anyway: a card that jumps while the row is
+ * sliding reads as a glitch. The border still lights up, and the focus outline
+ * is untouched.
+ */
+.wsr-strip a.wsr-card:hover,
+.wsr-strip a.wsr-card:focus {
+	transform: none;
+	box-shadow: none;
+}
+
+.wsr-strip .wsr-name {
+	font-size: 14px;
+}
+
+/* A strip of logos does not need every sponsor's note line. */
+.wsr-strip .wsr-meta {
+	display: none;
+}
+
+/*
+ * Reduced motion gets the original strip back.
+ *
+ * A permanently moving band is a real problem for anyone who has asked the
+ * system to stop animation, so this is not a nicety. The duplicate run is
+ * removed rather than left in place, or the row scrolls through every sponsor
+ * twice. What is left is the scroll-snap strip this replaced: swipes with a
+ * thumb, scrolls with a trackpad, tabs with a keyboard.
+ */
+@media (prefers-reduced-motion: reduce) {
+	.wsr-strip {
+		margin: 0 -16px;
+		padding: 4px 16px 16px;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+	}
+
+	.wsr-strip-track {
+		animation: none;
+		width: auto;
+	}
+
+	.wsr-strip-run[aria-hidden="true"] {
+		display: none;
+	}
+
+	.wsr-strip .wsr-card {
+		scroll-snap-align: start;
+	}
+}
+
+/*
+ * The Instagram placeholder, staging only.
+ *
+ * Same dashed panel as an empty sponsor tier, on purpose: it reads as a slot
+ * waiting for content rather than as a broken component.
+ */
+
+.wsr-insta-placeholder {
+	padding: 28px 22px;
+	border: 2px dashed #e3e8ee;
+	border-radius: 6px;
+	text-align: center;
+	color: #5d6b7a;
+}
+
+.wsr-insta-placeholder p {
+	margin: 0 0 6px;
+	font-size: 15px;
+	line-height: 1.5;
+}
+
+.wsr-insta-placeholder p:last-child {
+	margin-bottom: 0;
+}
+
+.wsr-insta-placeholder strong {
+	color: #1b2733;
+}

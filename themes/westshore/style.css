@@ -1,0 +1,758 @@
+/*
+Theme Name: Westshore
+Theme URI: https://westshorerfc.com
+Author: Westshore Rugby Football Club
+Description: Block theme for Westshore Rugby. Mobile first: the site runs about 72% mobile in season, so every layout starts single column and gains desktop structure on top. Styling lives in theme.json so colours, fonts and spacing are editable from Appearance > Editor > Styles without touching code.
+Version: 0.19.2
+Requires at least: 6.5
+Tested up to: 7.1
+Requires PHP: 8.0
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: westshore
+Tags: full-site-editing, block-patterns, one-column, custom-colors, custom-menu
+*/
+
+/*
+ * Bump Version above whenever a pattern file is added, renamed or removed.
+ *
+ * WordPress caches the theme's list of pattern files keyed by theme version, so
+ * a new pattern in patterns/ simply does not appear until the version changes.
+ * It fails silently: the file is deployed, the theme is active, and the pattern
+ * is not in the inserter. The version also busts the stylesheet cache, so it
+ * wants bumping on a CSS change too.
+ */
+
+/*
+ * Tap targets.
+ *
+ * Core renders the mobile menu toggle as a 24px icon, which is half the size a
+ * thumb needs. On a site that is roughly three-quarters mobile in season, the
+ * button that opens the entire navigation cannot be the hardest thing on the
+ * page to hit. Padding rather than a bigger icon, so the icon still looks right.
+ */
+.wp-block-navigation__responsive-container-open,
+.wp-block-navigation__responsive-container-close {
+	min-width: 44px;
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/*
+ * The header social icons get the same 44px floor.
+ *
+ * The anchor is exactly the size of the glyph, so without this the tap target
+ * is whatever core drew. Padding rather than a bigger icon, so the row keeps
+ * its proportions next to the Register button and only the hit area grows.
+ *
+ * The header set used to carry has-small-icon-size, core's 16px, while the
+ * footer had no size attribute and got core's 24px default. Same markup, two
+ * different sizes, which is what made the header pair look tiny on desktop.
+ * Both are on the default now.
+ */
+.westshore-social {
+	/* Two 44px targets must stay on one line. Wrapped, they stacked and took
+	   the header from 96px to 144px on a phone. */
+	flex-wrap: nowrap;
+}
+
+.westshore-social .wp-block-social-link {
+	margin: 0;
+}
+
+/*
+ * The header row is logo, social, Register, menu toggle, and at 375px that is
+ * more than fits once every target is 44px wide. Register is the second highest
+ * traffic page on the site and the toggle opens everything else, so the social
+ * icons are the ones that give way. They are in the footer at every width.
+ */
+ul.wp-block-social-links.westshore-social--header {
+	/* Specificity on purpose. Core's own .wp-block-social-links{display:flex}
+	   is enqueued after the theme stylesheet, so an equal-specificity rule here
+	   loses silently and the icons stay in the row. */
+	display: none;
+}
+
+@media (min-width: 600px) {
+	ul.wp-block-social-links.westshore-social--header {
+		display: flex;
+	}
+}
+
+/*
+ * The crest does not give way.
+ *
+ * It is a flex item in a nowrap row, so without this it is the thing that
+ * shrinks: measured at 29px on a 375px screen, against the 64px it is set to.
+ */
+.wp-block-site-logo {
+	flex-shrink: 0;
+}
+
+.westshore-social .wp-block-social-link-anchor {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 44px;
+	min-height: 44px;
+	padding: 0;
+}
+
+/*
+ * Menu rows in the overlay get the same treatment.
+ *
+ * Core sets padding:0 on these inside the open overlay, at a specificity of
+ * three classes, and the theme stylesheet is enqueued before the block styles
+ * so an equal-specificity rule loses. Measured at 375px the rows came out 26px
+ * and 42px tall. The doubled class is what beats it without !important.
+ */
+.wp-block-navigation__responsive-container.is-menu-open
+	.wp-block-navigation__responsive-container-content
+	.wp-block-navigation-item__content.wp-block-navigation-item__content {
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+/*
+ * Indent the overlay submenus.
+ *
+ * The header navigation deliberately carries no justifyContent: the parent flex
+ * group positions it, and the overlay then inherits flex-start instead of the
+ * flush-right alignment that made parents and children indistinguishable in the
+ * full-screen menu. Only the indent is left to do here.
+ */
+.wp-block-navigation__responsive-container.is-menu-open
+	.wp-block-navigation__submenu-container {
+	padding-left: 1rem;
+	padding-right: 0;
+}
+
+/*
+ * The Register button keeps its own width.
+ *
+ * It sits in a nowrap flex row with the logo and the navigation, so the browser
+ * shrank it to 101px and "Register" wrapped onto two lines, making the header
+ * 82px tall for no reason. It is the one thing in the header that must stay
+ * legible at a glance, so it does not get to shrink.
+ */
+.westshore-register {
+	flex-shrink: 0;
+}
+
+.westshore-register .wp-block-button__link {
+	white-space: nowrap;
+}
+
+/*
+ * Link cards.
+ *
+ * The Columns block stacks below 782px and is equal-width above it, which
+ * leaves an awkward stretch where a phone-width single column has already been
+ * abandoned but three columns are still too tight. A grid with a minimum track
+ * width picks the number of columns from the space available instead, so the
+ * same pattern works with three cards or with nine.
+ */
+.westshore-cards.wp-block-columns {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--wp--preset--spacing--30);
+	/* The wrapper is a constrained layout, which caps its children at the
+	   content width. The grid should use the whole width the wrapper was
+	   given, whatever that is. */
+	max-width: none;
+	width: 100%;
+}
+
+@media (min-width: 700px) {
+	.westshore-cards.wp-block-columns {
+		grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+	}
+}
+
+/*
+ * A grid of short cards, a photo, a heading and one line, goes two-up on a
+ * phone as well. The front page's four team cards were 2070px stacked at
+ * 375px, two and a half screens before anything else on the page; two-up
+ * with one line each they are 700px (2026-09-17). Not for people or sponsor
+ * cards, which carry a portrait and more text and stay one column.
+ */
+@media (max-width: 699px) {
+	.westshore-cards--tight.wp-block-columns {
+		grid-template-columns: 1fr 1fr;
+		gap: var(--wp--preset--spacing--20);
+	}
+}
+
+/* The column block sets its own flex-basis; the grid decides widths here. */
+.westshore-cards .westshore-card.wp-block-column {
+	flex-basis: auto !important;
+	display: flex;
+	flex-direction: column;
+	gap: var(--wp--preset--spacing--10);
+	padding: var(--wp--preset--spacing--20);
+	background: var(--wp--preset--color--white);
+	border: 1px solid var(--wp--preset--color--blue-light);
+	border-radius: 6px;
+}
+
+.westshore-card__image {
+	margin: 0 0 var(--wp--preset--spacing--10);
+}
+
+.westshore-card__image img {
+	width: 100%;
+	height: auto;
+	border-radius: 4px;
+	/* Cards look ragged when one logo is square and the next is a wide photo. */
+	aspect-ratio: 3 / 2;
+	object-fit: cover;
+}
+
+.westshore-card h3 {
+	margin: 0;
+}
+
+/* The card's own link is the last thing in it, so push it to the bottom and
+   every card in a row ends the same way regardless of body length. */
+.westshore-card__link {
+	margin-top: auto;
+	padding-top: var(--wp--preset--spacing--10);
+}
+
+.westshore-card__link a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+	font-weight: 700;
+	text-decoration: none;
+}
+
+.westshore-card__link a:hover,
+.westshore-card__link a:focus {
+	text-decoration: underline;
+}
+
+/*
+ * A card that is one link. Nathan's call, 2026-09-18: a card with a photo, a
+ * heading and one line reads as a button, and a visitor taps the photo. The
+ * card's own link is stretched over the whole card with a pseudo-element, so
+ * the markup is unchanged, a keyboard gets one stop per card, and a screen
+ * reader hears the link text and nothing else. Opt-in by class, because a
+ * people or sponsor card carries several links and a stretched one would
+ * cover them. The arrow says "this goes somewhere" before any hover; the
+ * hover itself is decoration, nothing depends on it (section 4 of
+ * design-direction.md).
+ */
+.westshore-card--link {
+	position: relative;
+}
+
+.westshore-card--link .westshore-card__link a::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+}
+
+.westshore-card--link .westshore-card__link a::after {
+	content: "\00a0\2192";
+}
+
+.westshore-card--link:hover,
+.westshore-card--link:focus-within {
+	border-color: var(--wp--preset--color--navy);
+}
+
+.westshore-card--link:hover .westshore-card__link a {
+	text-decoration: underline;
+}
+
+/*
+ * The facts band.
+ *
+ * A key and a value per line, the key set small and uppercase above the value.
+ * Two columns from 700px because four facts in one column on a wide screen is
+ * a list pretending to be a panel.
+ *
+ * The label is the club red at 100% on navy, which is the one place the accent
+ * earns its keep: 4.35:1 against white on paper, but this is small uppercase
+ * text on a navy ground, so it is set in a tint of white instead and the red
+ * carries the rule above the band. Contrast decided the colour, not taste.
+ */
+.westshore-facts {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: var(--wp--preset--spacing--20);
+}
+
+@media (min-width: 700px) {
+	.westshore-facts {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.westshore-facts p {
+	margin: 0;
+}
+
+.westshore-facts p strong {
+	display: block;
+	font-size: 0.8125rem;
+	font-weight: 700;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.68);
+	margin-bottom: 0.15rem;
+}
+
+/*
+ * The red rule that marks a band.
+ *
+ * Club red is #ED2025 and measures 4.35:1 on white, which passes AA for large
+ * or bold text and misses the 4.5:1 normal-text threshold. So it is never body
+ * text and never a button fill. As a 3px rule it carries no text at all, which
+ * is where an accent that bright belongs.
+ */
+.westshore-facts-band,
+.westshore-rule-top {
+	border-top: 3px solid var(--wp--preset--color--red);
+}
+
+/*
+ * Eyebrow, above a heading in a dark band.
+ *
+ * Uppercase and letterspaced so it reads as a label rather than as a first
+ * sentence somebody forgot to finish.
+ */
+.westshore-eyebrow {
+	margin-bottom: 0;
+	font-weight: 700;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.66);
+}
+
+/*
+ * The program grid keeps its cards even.
+ *
+ * Four programs. Two of them had no photograph until September 2026, and a
+ * card whose image is missing must not collapse to a different height from the
+ * one beside it, so the image slot holds its aspect ratio whether or not there
+ * is an image in it. All four carry a photograph now; the slot stays for the
+ * day one is taken out.
+ */
+.westshore-card__image--empty {
+	aspect-ratio: 3 / 2;
+	margin: 0 0 var(--wp--preset--spacing--10);
+	border-radius: 4px;
+	background: var(--wp--preset--color--blue-light);
+	/* A faint diagonal so an empty slot reads as "photo wanted" rather than as
+	   a block of colour somebody chose. */
+	background-image: repeating-linear-gradient(
+		45deg,
+		transparent 0 10px,
+		rgba(0, 59, 117, 0.05) 10px 20px
+	);
+}
+
+/*
+ * Honours strip.
+ *
+ * The figure is the point, so it is the biggest thing in the box and the label
+ * under it is small and quiet. Grid rather than the Columns block's own layout,
+ * for the same reason the card grid is: Columns stacks below 782px and is equal
+ * width above it, which leaves no useful two-up stage on a tablet.
+ */
+.westshore-stats.wp-block-columns {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+	gap: var(--wp--preset--spacing--20);
+	max-width: none;
+	width: 100%;
+}
+
+.westshore-stats .westshore-stat.wp-block-column {
+	flex-basis: auto !important;
+	padding: var(--wp--preset--spacing--20);
+	background: var(--wp--preset--color--blue-light);
+	border-radius: 6px;
+	text-align: center;
+}
+
+.westshore-stat__figure {
+	margin: 0;
+	font-weight: 800;
+	line-height: 1.05;
+	/* Fluid so three figures still fit across a 375px screen. */
+	font-size: clamp(1.75rem, 6vw, 2.5rem);
+	color: var(--wp--preset--color--navy);
+	font-variant-numeric: tabular-nums;
+}
+
+.westshore-stat__label {
+	margin: 0.25rem 0 0;
+	color: var(--wp--preset--color--slate);
+}
+
+/*
+ * Accordion sections.
+ *
+ * core/details renders a real <details>, so this works with JavaScript off and
+ * with every plugin removed. The summary is the tap target and gets the 44px
+ * floor the rest of the site uses.
+ *
+ * Every details block, not just the ones the Accordion pattern makes. The
+ * merged Team Photos page has six and the Awards page four, none of them from
+ * that pattern, and measured at 375px their summaries were 26px. A details a
+ * volunteer inserts from the inserter gets the floor too.
+ */
+.wp-block-details > summary {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+	min-height: 44px;
+	font-weight: 700;
+	cursor: pointer;
+	color: var(--wp--preset--color--blue-dark);
+}
+
+/*
+ * The marker, drawn rather than borrowed.
+ *
+ * display:flex on a summary takes the browser's own disclosure triangle away,
+ * so the row reads as a heading and nobody knows it opens. This puts one back
+ * on the left, in the club's navy, pointing down when the section is open.
+ */
+.wp-block-details > summary::marker,
+.wp-block-details > summary::-webkit-details-marker {
+	content: "";
+	display: none;
+}
+
+.wp-block-details > summary::before {
+	content: "";
+	flex: none;
+	width: 0;
+	height: 0;
+	border-top: 0.4em solid transparent;
+	border-bottom: 0.4em solid transparent;
+	border-left: 0.6em solid currentColor;
+	transition: transform 0.15s ease;
+}
+
+.wp-block-details[open] > summary::before {
+	transform: rotate(90deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wp-block-details > summary::before {
+		transition: none;
+	}
+}
+
+.wp-block-details > summary:focus-visible {
+	outline: 3px solid var(--wp--preset--color--red);
+	outline-offset: 2px;
+}
+
+.wp-block-details[open] > summary {
+	margin-bottom: var(--wp--preset--spacing--10);
+	border-bottom: 1px solid var(--wp--preset--color--blue-light);
+}
+
+/*
+ * The name index above a long accordion stack.
+ *
+ * The Alumni page is 55 players, one details block each, which is six screens
+ * of scrolling on a phone to find one name. The index is the same names as
+ * links, alphabetical by surname, in columns: a whole section becomes about
+ * one screen and a click jumps to the entry.
+ *
+ * Columns rather than a grid, because the number of names changes every time
+ * the club adds somebody and column layout does not care. 44px rows, the same
+ * floor every other tap target on the site has.
+ */
+.westshore-namelist.wp-block-list {
+	columns: 2;
+	column-gap: var(--wp--preset--spacing--30);
+	list-style: none;
+	/* Both margins set here rather than left to the group's block gap. The
+	   shorthand zeroed the top and dropping it did not help: core gives the
+	   List block its own top margin of zero, so the index sat flush against
+	   the count line above it either way. */
+	margin-top: var(--wp--preset--spacing--20);
+	margin-bottom: var(--wp--preset--spacing--30);
+	padding-left: 0;
+}
+
+@media (min-width: 600px) {
+	.westshore-namelist.wp-block-list {
+		columns: 3;
+	}
+}
+
+@media (min-width: 900px) {
+	.westshore-namelist.wp-block-list {
+		columns: 4;
+	}
+}
+
+.westshore-namelist > li {
+	break-inside: avoid;
+	margin: 0;
+}
+
+.westshore-namelist a {
+	display: flex;
+	align-items: center;
+	min-height: 44px;
+}
+
+/*
+ * Standalone text links, and the footer.
+ *
+ * Measured at 375px: "All teams and programs" and "Sponsor the club" rendered
+ * 17px tall, and the footer navigation rows 25 to 26px. The header overlay was
+ * given a 44px floor during the migration and the footer never was, so the same
+ * defect has been sitting one scroll further down the whole time.
+ *
+ * A link set on its own line is a tap target whatever its font size. Inline
+ * links inside a sentence are deliberately not included: padding them out would
+ * space the paragraph unevenly, and a reader hitting one has the whole line.
+ */
+.westshore-textlink a,
+footer .wp-block-navigation-item__content {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+}
+
+/*
+ * The footer crest: the club's SVG with the white wordmark, in place of the
+ * site title as text (theme 0.19.0). The image block brings its own bottom
+ * margin, which the footer's flex gap already covers.
+ */
+.westshore-footer-crest {
+	margin: 0;
+}
+
+/*
+ * The hero.
+ *
+ * It used to carry a fixed min-height of 300px, which is fine at 800px wide and
+ * wrong at 1900: the cover keeps its height while the viewport grows, so the
+ * crop band goes from about 2.5:1 to 6:1 and object-fit takes a thin strip out
+ * of the vertical middle. On the match photograph that strip is legs. The heads
+ * were cut off on exactly the screens where there was most room for them.
+ *
+ * Height now scales with the viewport, so the crop ratio stays roughly constant
+ * from 375px to 1900px.
+ */
+.westshore-hero.wp-block-cover {
+	min-height: clamp(360px, 30vw, 620px);
+}
+
+/*
+ * The motto, in the display face.
+ *
+ * Barlow Condensed at the same preset size reads a third narrower than Inter,
+ * so the motto takes one step up, and the condensed italic wants a little
+ * tracking to breathe. The translation under it is set small and spaced out so
+ * it reads as a caption to the Latin, not as a second heading. Asked for by the
+ * mens director on 2026-09-14: "livelier font", with "Speed Conquers All" under.
+ */
+.westshore-motto {
+	font-size: clamp(2.75rem, 8vw, 5rem);
+	letter-spacing: 0.02em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.westshore-motto__translation {
+	letter-spacing: 0.18em;
+	margin-top: 0.5rem;
+	text-transform: uppercase;
+}
+
+/*
+ * And the crop favours the top of the frame.
+ *
+ * In the original match photograph the runner's head sat about 20% down and
+ * the ball about 35%, so a band centred at 50% missed both. 34% kept the head,
+ * the ball and the tackled player in shot at every width.
+ *
+ * The cover block's focal point, set in the editor, renders as an inline style
+ * and beats this, and the rotation in functions.php sets one per photograph
+ * the same way. This is only the default for a cover that has none.
+ */
+.westshore-hero .wp-block-cover__image-background {
+	object-position: 50% 34%;
+}
+
+/*
+ * The page title band.
+ *
+ * Every page that does not supply its own header gets its title in a navy band
+ * through parts/page-header.html, so a visitor arriving from the rebuilt front
+ * page does not land on a bare heading on white. The band is the template's
+ * job rather than each page's, which is why sixteen pages got the treatment
+ * without a single one of them being edited.
+ *
+ * A page that opens with its own hero or page-header pattern uses the "Page,
+ * custom header" template instead, which has no band, or the title prints
+ * twice.
+ */
+.westshore-title-band .wp-block-post-title {
+	margin: 0;
+}
+
+/*
+ * The band sits flush under the header.
+ *
+ * A template part renders inside a wrapper div, and the root layout puts the
+ * block gap between every top-level element, so the band came down 24px and
+ * left a white stripe between the navigation and the red rule. The pages with
+ * their own hero never showed it because their template sets margin-top to 0 on
+ * main, and that difference is what made two pages look wrong next to the rest
+ * rather than all sixteen looking deliberate.
+ */
+.westshore-title-band-part {
+	margin-top: 0;
+}
+
+/*
+ * And so does the front page hero, for exactly the same reason.
+ *
+ * front-page.html was the one template that never set a top margin on main, so
+ * main took the root block gap and the full-bleed hero started 24px down the
+ * page with a white band above it. Every other template sets one, which is why
+ * this was the only page showing it. Set in the template rather than here,
+ * because a margin a volunteer can see in the editor beats one that appears
+ * only in the stylesheet.
+ */
+
+/*
+ * A team page hero.
+ *
+ * Not .westshore-hero: that one carries an object-position tuned to the single
+ * action photograph on the front page. These are squad photographs, wide
+ * panoramas of a line-up, so the crop stays centred and the band is shallower.
+ * The heading carries the meaning and the photograph is texture behind it,
+ * which is the only way a 25-face line-up survives being cropped to a band.
+ */
+.westshore-page-hero.wp-block-cover {
+	min-height: clamp(280px, 30vw, 620px);
+}
+
+/*
+ * And the crop keeps the heads.
+ *
+ * At 22vw with a 420px cap the band was about 4.5:1 against a source of 2.4:1,
+ * so 53% of the frame showed, taken from the vertical middle. On a squad
+ * line-up the middle is torsos: the back row's heads sit 14% to 24% down and
+ * were cut off at every width above a phone. 30vw shows about 72%, and a
+ * position of 30% clamps to the top of the frame at desktop widths, so the band
+ * is heads and shoulders down to the knees rather than a strip of shirts.
+ *
+ * This is not tuned to one photograph the way the front page hero is. It works
+ * for any line-up, which is what these two are and what a replacement will be.
+ * Check it anyway if somebody puts an action shot here.
+ */
+.westshore-page-hero .wp-block-cover__image-background {
+	object-position: 50% 30%;
+}
+
+/*
+ * A contact line in a person card is a standalone link too.
+ *
+ * The same 44px floor the standalone text links and the footer rows got in the
+ * Phase A visual pass. The card renders an email or a phone on its own line, so
+ * it is exactly the case that rule was written for; it was just in the plugin's
+ * markup rather than the theme's and so was missed. Measured at 17px on a phone
+ * before this.
+ */
+.wsr-person-contact a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 44px;
+}
+
+/*
+ * Core's lightbox trigger is a 20px button in the corner of an image.
+ *
+ * The team pages are galleries, the images are not themselves clickable, and
+ * that button is the only way into the full-size photograph. 20px is under half
+ * a thumb. Padding only: the magnifier glyph keeps its size and the hit area
+ * grows around it.
+ */
+.wp-lightbox-container button.lightbox-trigger {
+	min-width: 44px;
+	min-height: 44px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/*
+ * Numbered sub-clauses in the governing documents.
+ *
+ * The Constitution and the Manual of Policy carry their outline as typed
+ * markers, "a." and "(i)", on paragraphs Word indented with an inline
+ * padding-left. Inline styles do not survive a block editor round trip, so the
+ * indent is a class here instead. Small on a phone, where 90px of padding would
+ * leave a column two words wide, and full size once there is room for it.
+ */
+.westshore-clause-2 {
+	padding-left: 1.25rem;
+}
+
+.westshore-clause-3 {
+	padding-left: 2.5rem;
+}
+
+@media (min-width: 700px) {
+	.westshore-clause-2 {
+		padding-left: 2.5rem;
+	}
+
+	.westshore-clause-3 {
+		padding-left: 5rem;
+	}
+}
+
+/*
+ * Tables pasted out of Word.
+ *
+ * The Emergency Action Plan arrived as one table with width="727" and a
+ * width="520" column, against a 720px content width, so it overflowed on a
+ * desktop and scrolled the whole page sideways on a phone. That page is rebuilt
+ * and holds no table now, but this is a rule rather than a one-off: every one of
+ * these documents came out of Word and the next paste will do the same thing.
+ * display:block is what makes the table itself the thing that scrolls.
+ */
+main table {
+	display: block;
+	overflow-x: auto;
+	max-width: 100%;
+	width: 100%;
+}
+
+main table td,
+main table th {
+	width: auto !important;
+	min-width: 8rem;
+}
+
+/*
+ * The Instagram feed's header carries the account bio, and the bio is written
+ * as three lines. Smash Balloon hides every <br> inside the feed, so on the
+ * page the lines run together into one sentence. Put the breaks back for the
+ * bio only; the rest of the feed keeps the plugin's rule.
+ */
+#sb_instagram .sbi_bio br {
+	display: inline;
+}

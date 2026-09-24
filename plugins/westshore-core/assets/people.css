@@ -1,0 +1,179 @@
+/*
+ * People: the board cards and the coach lines.
+ *
+ * Mobile first, like sponsors.css and for the same reason: the site runs about
+ * 72% mobile in season. One column to start, columns added as the screen
+ * allows.
+ *
+ * Colours are hard-coded rather than read from theme.json, again matching
+ * sponsors.css. This plugin holds the club's data and has to keep working if
+ * the theme is ever swapped, which is the whole reason people live in a plugin
+ * and not in the theme.
+ */
+
+.wsr-people {
+	--wsr-ink: #1b2733;
+	--wsr-muted: #5d6b7a;
+	--wsr-line: #e3e8ee;
+	--wsr-navy: #003b75;
+	--wsr-card: #fff;
+	max-width: 1140px;
+	margin: 0 auto;
+	color: var(--wsr-ink);
+	font-family: inherit;
+}
+
+.wsr-people * {
+	box-sizing: border-box;
+}
+
+/* The coach lines. One team per line, the way the Coaches page has always
+   read, so moving it onto this system changes nothing visible. */
+
+.wsr-people-line {
+	margin: 0 0 12px;
+	line-height: 1.5;
+}
+
+.wsr-people-line strong {
+	color: var(--wsr-navy);
+}
+
+/*
+ * A role title next to a name. Smaller and quieter than the name, because the
+ * name is what somebody is scanning for. Kept on the same line rather than
+ * bracketed onto its own, so a team with four coaches still reads as one line.
+ */
+.wsr-person-role {
+	color: var(--wsr-muted);
+	font-size: 0.875em;
+}
+
+.wsr-person-role::before {
+	content: "(";
+}
+
+.wsr-person-role::after {
+	content: ")";
+}
+
+/* The board cards. */
+
+.wsr-people-heading {
+	margin: 32px 0 16px;
+	color: var(--wsr-navy);
+}
+
+/*
+ * Columns sized by the content, not by the viewport.
+ *
+ * Media queries were wrong here: this renders inside the theme's 720px content
+ * column, so a "three columns above 900px" rule gave three 230px cards on a
+ * desktop and broke "Spencer Dunstan-Adams" across three lines. auto-fill asks
+ * how much room there actually is, which is two columns in a content column and
+ * more in a wide one, and it needs no breakpoint to maintain.
+ *
+ * 260px is the same minimum the hand-written board page used.
+ */
+.wsr-people--cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+	gap: 16px;
+}
+
+.wsr-person {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	padding: 16px;
+	border: 1px solid var(--wsr-line);
+	border-radius: 6px;
+	background: var(--wsr-card);
+}
+
+.wsr-person-photo {
+	flex-shrink: 0;
+}
+
+.wsr-person-photo img {
+	display: block;
+	width: 72px;
+	height: 72px;
+	border-radius: 50%;
+	object-fit: cover;
+}
+
+/*
+ * min-width:0 so a long email address wraps inside the card instead of pushing
+ * the card wider than its grid column. Flex children default to min-width:auto,
+ * which refuses to shrink below their content.
+ */
+.wsr-person-text {
+	min-width: 0;
+}
+
+.wsr-person-title {
+	color: var(--wsr-muted);
+	font-size: 0.8125rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.wsr-person-name {
+	margin-top: 2px;
+	font-size: 1.0625rem;
+	font-weight: 600;
+}
+
+.wsr-person-contact {
+	margin-top: 6px;
+	font-size: 0.875rem;
+	overflow-wrap: anywhere;
+}
+
+.wsr-person-contact a {
+	color: var(--wsr-navy);
+	text-decoration: none;
+}
+
+.wsr-person-contact a:hover,
+.wsr-person-contact a:focus {
+	text-decoration: underline;
+}
+
+/*
+ * The roster: a whole group at half the height of the card grid.
+ *
+ * The board is fifteen people. As full cards that ran 2,095px on a phone, which
+ * is most of what was wrong with that page. Same card, smaller photograph and
+ * tighter padding, and two columns as soon as there is room for them.
+ *
+ * Order is the club's, set on each person's role row in wp-admin, so the
+ * President is first here and stays first.
+ */
+.wsr-people--roster {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 8px;
+}
+
+@media (min-width: 520px) {
+	.wsr-people--roster {
+		grid-template-columns: 1fr 1fr;
+		gap: 8px 16px;
+	}
+}
+
+.wsr-people--roster .wsr-person {
+	gap: 12px;
+	padding: 10px 12px;
+}
+
+.wsr-people--roster .wsr-person-photo img {
+	width: 48px;
+	height: 48px;
+}
+
+.wsr-people--roster .wsr-person-name {
+	font-size: 1rem;
+}

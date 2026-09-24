@@ -1,0 +1,587 @@
+/*
+ * Play HQ fixtures and ladders on the senior pages.
+ *
+ * Two tables at the 720px content width. The theme already makes any table in
+ * main scroll sideways on a phone rather than the page, so nothing here fights
+ * that; these rules are the type sizes, the marked rows and the column
+ * alignment. Colours are hard-coded for the reason sponsors.css gives: the
+ * plugin has to keep working if the theme is ever swapped.
+ */
+
+.wsr-fixtures,
+.wsr-ladder {
+	--wsr-ink: #1b2733;
+	--wsr-muted: #5d6b7a;
+	--wsr-line: #e3e8ee;
+	--wsr-navy: #003b75;
+	--wsr-red-dark: #c4161c;
+}
+
+.wsr-fixtures *,
+.wsr-ladder * {
+	box-sizing: border-box;
+}
+
+.wsr-fixtures__title {
+	margin: 0 0 10px;
+	color: var(--wsr-ink);
+}
+
+/* The scoreline strip: last result, next game, table position. Three
+   panels at the content width, one column on a phone. */
+.wsr-scoreline {
+	--wsr-win: #1e7b34;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 150px;
+	gap: 12px;
+	margin: 0 0 12px;
+}
+
+.wsr-scoreline--no-result {
+	grid-template-columns: minmax(0, 1fr) 150px;
+}
+
+.wsr-scoreline--no-table {
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.wsr-scoreline--no-result.wsr-scoreline--no-table {
+	grid-template-columns: minmax(0, 1fr);
+}
+
+.wsr-scoreline__panel {
+	padding: 12px 14px;
+	border: 1px solid var(--wsr-line);
+	border-radius: 6px;
+	background: #fff;
+}
+
+.wsr-scoreline__panel p {
+	margin: 0;
+	line-height: 1.3;
+}
+
+/* Three panels, three grounds: white for the result, navy for the next game,
+   the pale line colour for the table. The coloured left edge the panels had
+   was the one-side accent the theme took off every card on 2026-09-14, and
+   came off here on 2026-09-17; the result is carried by the word Won or Lost
+   below. Navy on the next game is the front page's facts band logic, the
+   thing a visitor can act on gets the club colour. */
+.wsr-scoreline__panel--next {
+	border-color: var(--wsr-navy);
+	background: var(--wsr-navy);
+}
+
+.wsr-scoreline__panel--next .wsr-scoreline__label,
+.wsr-scoreline__panel--next .wsr-scoreline__meta {
+	color: rgba(255, 255, 255, 0.68);
+}
+
+.wsr-scoreline__panel--next .wsr-scoreline__opponent,
+.wsr-scoreline__panel--next .wsr-scoreline__line {
+	color: #fff;
+}
+
+.wsr-scoreline__panel--table {
+	border: 0;
+	border-radius: 6px;
+	background: var(--wsr-line);
+	text-align: center;
+}
+
+.wsr-scoreline__label {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: var(--wsr-muted);
+}
+
+.wsr-scoreline__score {
+	margin: 4px 0 !important;
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--wsr-ink);
+	font-variant-numeric: tabular-nums;
+}
+
+.wsr-scoreline__score span {
+	font-size: 18px;
+	color: var(--wsr-muted);
+}
+
+.wsr-scoreline__opponent {
+	margin: 6px 0 !important;
+	font-size: 20px;
+	font-weight: 700;
+	color: var(--wsr-ink);
+}
+
+.wsr-scoreline__line {
+	font-size: 14px;
+	color: var(--wsr-ink);
+}
+
+.wsr-scoreline__panel--won .wsr-scoreline__line strong {
+	color: var(--wsr-win);
+}
+
+.wsr-scoreline__panel--lost .wsr-scoreline__line strong {
+	color: var(--wsr-red-dark);
+}
+
+.wsr-scoreline__meta {
+	margin-top: 2px !important;
+	font-size: 12px;
+	color: var(--wsr-muted);
+}
+
+.wsr-scoreline__position {
+	margin: 4px 0 !important;
+	font-size: 28px;
+	font-weight: 700;
+	color: var(--wsr-navy);
+}
+
+.wsr-scoreline__position--none {
+	color: var(--wsr-muted);
+}
+
+@media (max-width: 600px) {
+	.wsr-scoreline,
+	.wsr-scoreline--no-result,
+	.wsr-scoreline--no-table {
+		grid-template-columns: 1fr;
+	}
+
+	.wsr-scoreline__panel--table {
+		display: flex;
+		align-items: baseline;
+		gap: 10px;
+		text-align: left;
+	}
+
+	.wsr-scoreline__panel--table .wsr-scoreline__position {
+		margin: 0 !important;
+		font-size: 22px;
+	}
+}
+
+/* The two folds under the strip, the season and the table, as one row from
+   700px up when [westshore_fixtures ladder="yes"] prints them together.
+   Stacked they were two tall boxes, most of what made the section read as
+   the same card over and over. Their padding drops to a panel's so the row
+   sits with the strip; the theme's 44px summary floor still holds. An open
+   fold takes the whole row, the ladder is a full-width table. */
+.wsr-scoreline__more {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 12px;
+	margin: 0 0 12px;
+}
+
+.wsr-scoreline__more > .wsr-fold {
+	margin: 0;
+	padding: 0 14px;
+}
+
+.wsr-scoreline__more > .wsr-fold[open] {
+	padding-bottom: 12px;
+}
+
+@media (min-width: 700px) {
+	.wsr-scoreline__more {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.wsr-scoreline__more > .wsr-fold[open] {
+		grid-column: 1 / -1;
+	}
+}
+
+/* A whole block behind one bar, [westshore_fixtures fold="yes"], for a page
+   with six sides on it. The bar is the side and its next game; open, the
+   strip sits under the bar with a panel's gap and the two folds below it are
+   nested, so they lose the outer box and keep only their bars. */
+.wsr-fixtures--folded {
+	margin: 0;
+}
+
+/* The theme lays the bar out as a flex row, arrow then text. With a second
+   line for the ground it is a two-column grid instead: the arrow in the
+   first column, the label and the ground stacked in the second, so the
+   arrow stays beside the first line rather than wrapping onto its own.
+   Two classes, because the theme's rule is the same weight and its
+   stylesheet is printed after this one. */
+.wsr-fixtures--folded > .wsr-fixtures__fold > summary {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: start;
+	column-gap: 0.5em;
+	row-gap: 2px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.wsr-fixtures--folded > .wsr-fixtures__fold > summary::before {
+	grid-column: 1;
+	grid-row: 1;
+	margin-top: 0.45em;
+}
+
+.wsr-fixtures__fold-label {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.wsr-fixtures__fold-where {
+	grid-column: 2;
+	grid-row: 2;
+	font-size: 13px;
+	font-weight: 400;
+	color: #5d6b7a;
+}
+
+.wsr-fixtures--folded > .wsr-fixtures__fold[open] > .wsr-scoreline {
+	margin-top: 12px;
+}
+
+.wsr-fixtures--folded .wsr-scoreline__more {
+	margin-bottom: 4px;
+}
+
+/* The folds. The box is the plugin's own: theme.json gives core/details the
+   same border, radius and padding, but WordPress only prints a core block's
+   theme.json rules on a page where that block renders, so a page with only
+   plugin folds on it (Juniors, 2026-09-18) had them bare. The theme styles
+   .wp-block-details > summary with the arrow and the 44px bar, which is in
+   style.css and on every page; the summary rules below are the fallback for
+   a theme that does not, and are weaker than the theme's on purpose. */
+.wsr-fold {
+	box-sizing: border-box;
+	padding: 16px;
+	border: 1px solid var(--wsr-line);
+	border-radius: 6px;
+	background: #fff;
+}
+
+.wsr-fold > summary {
+	cursor: pointer;
+	font-weight: 700;
+}
+
+.wsr-fold[open] > summary {
+	margin-bottom: 8px;
+}
+
+.wsr-fold > .wsr-fixtures__table,
+.wsr-fold > .wsr-ladder__table {
+	margin-top: 8px;
+}
+
+/* The next home game as a panel at the top of a results section, from
+   [westshore_next_home_game layout="panel"]. Filled navy, the scoreline's
+   next-game panel at the full content width: the thing a visitor can act on
+   gets the club colour, the same logic as the facts band. Ours is the ground
+   named here even at home, since the panel stands alone (2026-09-18). */
+.wsr-nexthome {
+	--wsr-navy: #003b75;
+	margin: 0 0 var(--wp--preset--spacing--30, 20px);
+	padding: 16px 20px 18px;
+	border-radius: 6px;
+	background: var(--wsr-navy);
+	color: #fff;
+}
+
+.wsr-nexthome p {
+	margin: 0;
+	line-height: 1.3;
+}
+
+.wsr-nexthome__label {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 0.68);
+}
+
+.wsr-nexthome__when {
+	margin-top: 6px !important;
+	font-size: 20px;
+	font-weight: 700;
+}
+
+.wsr-nexthome__who {
+	margin-top: 2px !important;
+	font-size: 17px;
+}
+
+.wsr-nexthome__meta {
+	margin-top: 8px !important;
+	font-size: 13px;
+	color: rgba(255, 255, 255, 0.68);
+}
+
+.wsr-nexthome__meta a {
+	color: #fff;
+}
+
+/* The scoreboard cards: a navy header bleeding to the card edge, the score
+   in big figures, the next game under a rule. The theme's card grid gives
+   two across at the content width and one on a phone. */
+.wsr-scoreboard {
+	--wsr-ink: #1b2733;
+	--wsr-muted: #5d6b7a;
+	--wsr-line: #e3e8ee;
+	--wsr-navy: #003b75;
+	--wsr-red-dark: #c4161c;
+	--wsr-win: #1e7b34;
+}
+
+.wsr-scoreboard .westshore-cards .westshore-card.wsr-score {
+	padding: 0;
+	gap: 0;
+	overflow: hidden;
+}
+
+.wsr-score__head {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 10px;
+	padding: 9px 14px;
+	background: var(--wsr-navy);
+	color: #fff;
+}
+
+.wsr-score__team {
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.wsr-score__pos {
+	font-size: 12px;
+	color: rgba(255, 255, 255, 0.72);
+	white-space: nowrap;
+}
+
+.wsr-score__body {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 12px 14px 14px;
+}
+
+.wsr-score__body p {
+	margin: 0;
+	line-height: 1.35;
+}
+
+.wsr-score__meta {
+	font-size: 12px;
+	color: var(--wsr-muted);
+}
+
+.wsr-score__score {
+	font-size: 24px;
+	font-weight: 700;
+	color: var(--wsr-ink);
+	font-variant-numeric: tabular-nums;
+}
+
+.wsr-score__score--pending {
+	font-size: 16px;
+	font-weight: 400;
+	color: var(--wsr-muted);
+}
+
+.wsr-score__score--opens {
+	font-size: 18px;
+}
+
+.wsr-score__letter--won {
+	color: var(--wsr-win);
+}
+
+.wsr-score__letter--lost {
+	color: var(--wsr-red-dark);
+}
+
+.wsr-score__letter--drawn {
+	color: var(--wsr-muted);
+}
+
+.wsr-score__opp {
+	font-size: 14px;
+	font-weight: 400;
+	color: var(--wsr-muted);
+}
+
+.wsr-score__next {
+	margin-top: 6px !important;
+	padding-top: 8px;
+	border-top: 1px solid var(--wsr-line);
+	font-size: 13px;
+	color: var(--wsr-ink);
+}
+
+.wsr-score__next span {
+	color: var(--wsr-muted);
+}
+
+.wsr-scoreboard .westshore-card__link {
+	margin-top: 6px !important;
+}
+
+/* The wrapper scrolls, not the table. The theme makes every table in main
+   display:block with an 8rem floor on every cell, for pasted Word tables; a
+   table that is laid out on purpose wants neither, so both are undone here
+   with the theme's own weight. */
+.wsr-fixtures,
+.wsr-ladder {
+	overflow-x: auto;
+}
+
+main .wsr-fixtures__table,
+main .wsr-ladder__table {
+	display: table;
+	width: 100%;
+	margin: 0;
+	border-collapse: collapse;
+	font-size: 15px;
+	line-height: 1.35;
+}
+
+main .wsr-fixtures__table th,
+main .wsr-fixtures__table td,
+main .wsr-ladder__table th,
+main .wsr-ladder__table td {
+	min-width: 0;
+	padding: 8px 10px;
+	border: 0;
+	border-bottom: 1px solid var(--wsr-line);
+	text-align: left;
+	vertical-align: top;
+}
+
+.wsr-fixtures__table thead th,
+.wsr-ladder__table thead th {
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.5px;
+	text-transform: uppercase;
+	color: var(--wsr-muted);
+	border-bottom: 2px solid var(--wsr-line);
+}
+
+.wsr-fixtures__date {
+	white-space: nowrap;
+}
+
+.wsr-fixtures__round {
+	white-space: nowrap;
+	color: var(--wsr-muted);
+}
+
+.wsr-fixtures__venue {
+	font-size: 13px;
+	color: var(--wsr-muted);
+}
+
+.wsr-fixtures__result {
+	white-space: nowrap;
+	font-weight: 700;
+}
+
+/* A kickoff is not a result, so it does not shout like one. */
+.wsr-fixtures__kickoff {
+	font-weight: 400;
+}
+
+/* Five columns do not fit a phone, and the score is the column a visitor
+   came for, so it has to stay on screen rather than a scroll away. The round
+   and the ground go, the date wraps, and everything is a size smaller. */
+@media (max-width: 600px) {
+	main .wsr-fixtures__table {
+		font-size: 14px;
+	}
+
+	main .wsr-fixtures__table th,
+	main .wsr-fixtures__table td {
+		padding: 8px 6px;
+	}
+
+	.wsr-fixtures__round,
+	.wsr-fixtures__venue {
+		display: none;
+	}
+
+	.wsr-fixtures__date {
+		white-space: normal;
+	}
+}
+
+/* The next game to be played. */
+.wsr-fixtures__next td {
+	background: #eef2f7;
+}
+
+.wsr-fixtures__next .wsr-fixtures__date {
+	color: var(--wsr-navy);
+	font-weight: 700;
+}
+
+/* A game filed under another grade, an exhibition usually. */
+.wsr-fixtures__other td {
+	color: var(--wsr-muted);
+}
+
+.wsr-fixtures__link {
+	margin: 12px 0 0;
+}
+
+/* The ladder. */
+
+.wsr-ladder__caption {
+	caption-side: top;
+	padding: 0 0 8px;
+	text-align: left;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: var(--wsr-navy);
+}
+
+main .wsr-ladder__table .wsr-ladder__pos {
+	width: 2.25em !important;
+	text-align: right;
+	color: var(--wsr-muted);
+}
+
+main .wsr-ladder__table .wsr-ladder__team {
+	width: auto;
+}
+
+main .wsr-ladder__table th.wsr-ladder__num,
+main .wsr-ladder__table td.wsr-ladder__num {
+	width: 3.25em !important;
+	text-align: right;
+	font-variant-numeric: tabular-nums;
+}
+
+.wsr-ladder__table td.wsr-ladder__num:last-child {
+	font-weight: 700;
+}
+
+/* Our own row. */
+.wsr-ladder__us td {
+	background: #eef2f7;
+	font-weight: 700;
+	color: var(--wsr-ink);
+}
+
+.wsr-ladder__us td.wsr-ladder__pos {
+	color: var(--wsr-red-dark);
+}

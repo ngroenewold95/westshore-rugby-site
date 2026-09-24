@@ -1,0 +1,160 @@
+/*
+ * YouTube streams: the live banner and the front page's one wide entry.
+ *
+ * The cards on the senior pages use the theme's own card classes and take
+ * nothing from here. Colours are hard-coded for the reason sponsors.css gives:
+ * the plugin has to keep working if the theme is ever swapped. The red is the
+ * darker of the crest's two, the one that clears 4.5:1 on white; the lighter
+ * red is a marker dot and never carries text.
+ */
+
+.wsr-streams {
+	--wsr-ink: #1b2733;
+	--wsr-muted: #5d6b7a;
+	--wsr-line: #e3e8ee;
+	--wsr-navy: #003b75;
+	--wsr-red: #ed2025;
+	--wsr-red-dark: #c4161c;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.wsr-streams * {
+	box-sizing: border-box;
+}
+
+/* The section sits at the content width, 720px, where the theme's card grid
+   would fit two and leave an orphan. A smaller minimum fits three. */
+.wsr-streams .westshore-cards.wp-block-columns {
+	grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+}
+
+/* YouTube's hqdefault.jpg is 480x360 with the 16:9 frame letterboxed in
+   black. A 16:9 box with object-fit cover crops exactly the bars away. */
+.wsr-streams .westshore-card__image img {
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+}
+
+/* The banner. */
+
+.wsr-live {
+	padding: 20px;
+	border: 1px solid var(--wsr-line);
+	border-radius: 6px;
+	background: #fff;
+}
+
+.wsr-live__marker {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 8px;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: var(--wsr-red-dark);
+}
+
+.wsr-live__dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--wsr-red);
+	animation: wsr-live-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wsr-live__dot {
+		animation: none;
+	}
+}
+
+@keyframes wsr-live-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.35; }
+}
+
+.wsr-live__title {
+	margin: 0 0 16px;
+	color: var(--wsr-ink);
+}
+
+.wsr-live__player {
+	position: relative;
+	width: 100%;
+	aspect-ratio: 16 / 9;
+	background: #000;
+	border-radius: 4px;
+	overflow: hidden;
+}
+
+.wsr-live__player iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.wsr-live__link {
+	margin: 12px 0 0;
+}
+
+/* The front page's one entry: thumbnail beside the text from tablet up. */
+
+.wsr-feature {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 16px;
+	padding: 20px;
+	border: 1px solid var(--wsr-line);
+	border-radius: 6px;
+	background: #fff;
+}
+
+@media (min-width: 700px) {
+	.wsr-feature {
+		grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+		gap: 24px;
+		align-items: center;
+	}
+}
+
+.wsr-feature .westshore-card__image {
+	margin: 0;
+}
+
+.wsr-feature .westshore-card__image img {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 16 / 9;
+	object-fit: cover;
+	border-radius: 4px;
+}
+
+.wsr-feature__eyebrow {
+	margin: 0 0 4px;
+	font-size: 14px;
+	font-weight: 700;
+	letter-spacing: 1px;
+	text-transform: uppercase;
+	color: var(--wsr-navy);
+}
+
+.wsr-feature__title {
+	margin: 0 0 4px;
+	color: var(--wsr-ink);
+}
+
+.wsr-feature__date {
+	margin: 0 0 12px;
+	font-size: 15px;
+	color: var(--wsr-muted);
+}
+
+.wsr-feature__link {
+	margin: 0;
+}
